@@ -36,9 +36,9 @@ const UserStores = () => {
     }
   };
 
-  const handleRating = async (storeId, rating, isUpdate) => {
+  const handleRating = async (storeId, rating, alreadyRated) => {
     try {
-      if (isUpdate) {
+      if (alreadyRated) {
         await api.put(`/stores/${storeId}/rating`, { rating });
       } else {
         await api.post(`/stores/${storeId}/rating`, { rating });
@@ -80,21 +80,21 @@ const UserStores = () => {
               <tr><td colSpan="5" style={{textAlign: 'center'}}>Loading stores...</td></tr>
             ) : stores.length === 0 ? (
               <tr><td colSpan="5" className="empty-state">No stores found matching your search.</td></tr>
-            ) : stores.map(s => (
-              <tr key={s.id}>
-                <td style={{fontWeight: 500}}>{s.name}</td>
-                <td style={{color: 'var(--text-secondary)'}}>{s.address}</td>
+            ) : stores.map(store => (
+              <tr key={store.id}>
+                <td style={{fontWeight: 500}}>{store.name}</td>
+                <td style={{color: 'var(--text-secondary)'}}>{store.address}</td>
                 <td>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <RatingStars rating={Math.round(s.overall_rating)} interactive={false} />
-                    <span style={{fontWeight: 600}}>{s.overall_rating > 0 ? s.overall_rating : 'No ratings'}</span>
+                    <RatingStars rating={Math.round(store.overall_rating)} interactive={false} />
+                    <span style={{fontWeight: 600}}>{store.overall_rating > 0 ? store.overall_rating : 'No ratings'}</span>
                   </div>
                 </td>
                 <td>
-                  {s.my_rating ? (
+                  {store.my_rating ? (
                     <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                      <RatingStars rating={s.my_rating} interactive={false} />
-                      <span style={{color: 'var(--text-secondary)'}}>{s.my_rating} / 5</span>
+                      <RatingStars rating={store.my_rating} interactive={false} />
+                      <span style={{color: 'var(--text-secondary)'}}>{store.my_rating} / 5</span>
                     </div>
                   ) : (
                     <span style={{color: 'var(--text-secondary)'}}>Not rated yet</span>
@@ -102,11 +102,11 @@ const UserStores = () => {
                 </td>
                 <td>
                   <RatingStars 
-                    rating={s.my_rating || 0} 
-                    onRate={(val) => handleRating(s.id, val, !!s.my_rating)} 
+                    rating={store.my_rating || 0} 
+                    onRate={(val) => handleRating(store.id, val, !!store.my_rating)} 
                   />
                   <div style={{fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px'}}>
-                    {s.my_rating ? 'Update Rating' : 'Rate Store'}
+                    {store.my_rating ? 'Update Rating' : 'Rate Store'}
                   </div>
                 </td>
               </tr>

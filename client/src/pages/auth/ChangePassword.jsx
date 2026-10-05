@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 
+function isValidPassword(password) {
+  const hasUpper = /[A-Z]/.test(password);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  return password.length >= 8 && password.length <= 16 && hasUpper && hasSpecial;
+}
+
 const ChangePassword = () => {
   const [formData, setFormData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [error, setError] = useState('');
@@ -18,9 +24,7 @@ const ChangePassword = () => {
       return setError('New passwords do not match');
     }
 
-    const hasUpper = /[A-Z]/.test(formData.newPassword);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword);
-    if (formData.newPassword.length < 8 || formData.newPassword.length > 16 || !hasUpper || !hasSpecial) {
+    if (!isValidPassword(formData.newPassword)) {
       return setError('Password must be 8-16 chars, with at least 1 uppercase and 1 special char');
     }
 

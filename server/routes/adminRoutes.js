@@ -10,16 +10,21 @@ router.use(authorize('SYSTEM ADMINISTRATOR'));
 
 router.get('/dashboard', async (req, res, next) => {
   try {
-    const usersCount = await pool.query('SELECT COUNT(*) FROM users');
-    const storesCount = await pool.query('SELECT COUNT(*) FROM stores');
-    const ratingsCount = await pool.query('SELECT COUNT(*) FROM ratings');
-    
+    // get all three counts in one query instead of three separate ones
+    const result = await pool.query(`
+      SELECT
+        (SELECT COUNT(*) FROM users) AS total_users,
+        (SELECT COUNT(*) FROM stores) AS total_stores,
+        (SELECT COUNT(*) FROM ratings) AS total_ratings
+    `);
+
+    const row = result.rows[0];
     res.json({
       success: true,
       data: {
-        totalUsers: parseInt(usersCount.rows[0].count),
-        totalStores: parseInt(storesCount.rows[0].count),
-        totalRatings: parseInt(ratingsCount.rows[0].count)
+        totalUsers: parseInt(row.total_users),
+        totalStores: parseInt(row.total_stores),
+        totalRatings: parseInt(row.total_ratings)
       }
     });
   } catch (error) {

@@ -8,18 +8,17 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get('/admin/dashboard');
-        setStats(res.data.data);
-      } catch (err) {
-        setError('Unable to load dashboard statistics. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
+    api.get('/admin/dashboard')
+      .then(res => setStats(res.data.data))
+      .catch(() => setError('Failed to load dashboard stats.'))
+      .finally(() => setLoading(false));
   }, []);
+
+  const statCards = [
+    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'var(--primary)' },
+    { label: 'Total Stores', value: stats.totalStores, icon: Store, color: 'var(--success)' },
+    { label: 'Total Ratings', value: stats.totalRatings, icon: Star, color: 'var(--warning)' },
+  ];
 
   return (
     <div>
@@ -31,32 +30,18 @@ const AdminDashboard = () => {
       {error && <div className="error-msg">{error}</div>}
 
       {loading ? (
-        <div>Loading dashboard...</div>
+        <div>Loading...</div>
       ) : (
         <div className="stats-grid">
-          <div className="card stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <h4>Total Users</h4>
-              <Users size={20} color="var(--primary)" />
+          {statCards.map(card => (
+            <div key={card.label} className="card stat-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <h4>{card.label}</h4>
+                <card.icon size={20} color={card.color} />
+              </div>
+              <div className="value">{card.value}</div>
             </div>
-            <div className="value">{stats.totalUsers}</div>
-          </div>
-          
-          <div className="card stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <h4>Total Stores</h4>
-              <Store size={20} color="var(--success)" />
-            </div>
-            <div className="value">{stats.totalStores}</div>
-          </div>
-
-          <div className="card stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <h4>Total Ratings</h4>
-              <Star size={20} color="var(--warning)" />
-            </div>
-            <div className="value">{stats.totalRatings}</div>
-          </div>
+          ))}
         </div>
       )}
     </div>

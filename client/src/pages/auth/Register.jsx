@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
+function isValidPassword(password) {
+  const hasUpper = /[A-Z]/.test(password);
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  return password.length >= 8 && password.length <= 16 && hasUpper && hasSpecial;
+}
+
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', address: '', password: '' });
   const [error, setError] = useState('');
@@ -17,9 +23,7 @@ const Register = () => {
     if (formData.name.length < 20 || formData.name.length > 60) {
       return setError('Name must be between 20 and 60 characters.');
     }
-    const hasUpper = /[A-Z]/.test(formData.password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-    if (formData.password.length < 8 || formData.password.length > 16 || !hasUpper || !hasSpecial) {
+    if (!isValidPassword(formData.password)) {
       return setError('Password must be 8-16 characters, with at least 1 uppercase and 1 special character.');
     }
 
