@@ -1,6 +1,6 @@
 # Store Rating Platform
 
-A full-stack web application for rating stores, built as an intern coding challenge.
+A full-stack web application where users can browse stores and submit ratings, built as an intern coding challenge.
 
 ## Tech Stack
 - **Frontend**: React.js, Vite, Plain CSS
@@ -8,41 +8,56 @@ A full-stack web application for rating stores, built as an intern coding challe
 - **Database**: PostgreSQL
 - **Authentication**: JWT, bcryptjs
 
+---
+
+## 🔐 Demo Login Credentials (For Assessment)
+
+> All roles share the same login portal at `/login`. Run `npm run seed` in the `server/` directory first to populate these accounts.
+
+| Role | Email | Password |
+|------|-------|----------|
+| **System Administrator** | `admin@example.com` | `Admin@123` |
+| **Normal User** | `user@example.com` | `User@123` |
+| **Store Owner** | `owner@example.com` | `Owner@123` |
+
+---
+
+## Features
+- JWT-based authentication with role-based access control
+- **Admin**: Dashboard stats, manage users & stores, search/filter/sort lists, add users & stores
+- **Normal User**: Browse stores, search, submit/modify ratings (1–5 stars)
+- **Store Owner**: View dashboard with average rating and per-user breakdown
+
+---
+
 ## Folder Structure
 ```
 .
 ├── client/          # React frontend (Vite)
 │   ├── src/
-│   │   ├── components/  # Reusable UI components
-│   │   ├── context/     # React Context (Auth)
-│   │   ├── pages/       # Route pages
-│   │   ├── services/    # API configuration
-│   │   ├── App.jsx      # Routing
-│   │   ├── main.jsx     # Entry point
-│   │   └── styles.css   # Plain CSS
+│   │   ├── components/  # Navbar, Layout, RatingStars, RoleRoute
+│   │   ├── context/     # AuthContext (JWT auth state)
+│   │   ├── pages/       # admin/, auth/, owner/, user/ pages
+│   │   ├── services/    # Axios API instance
+│   │   ├── App.jsx      # Routes
+│   │   └── styles.css   # Plain CSS design system
 │   └── package.json
-└── server/          # Node.js backend
-    ├── middleware/  # Auth & Role middleware
-    ├── routes/      # Express routes
-    ├── db.js        # PostgreSQL connection
-    ├── schema.sql   # Database schema
-    ├── seed.js      # Seed script
-    ├── server.js    # Entry point
+└── server/          # Node.js + Express backend
+    ├── middleware/  # JWT authenticate + role authorize
+    ├── routes/      # authRoutes, adminRoutes, userRoutes, ownerRoutes
+    ├── db.js        # PostgreSQL pool connection
+    ├── schema.sql   # DB schema (users, stores, ratings)
+    ├── seed.js      # Seeds demo users, stores, and ratings
+    ├── server.js    # Express entry point (port 5000)
     └── package.json
 ```
 
-## Features
-- JWT-based authentication
-- Role-based access control (Admin, Normal User, Store Owner)
-- **Admin**: Dashboard stats, manage users and stores, search, filter, and sort lists.
-- **Normal User**: Browse stores, search, submit ratings, modify ratings.
-- **Store Owner**: View dashboard, track average rating, see user ratings.
+---
 
 ## Installation & Setup
 
 ### 1. PostgreSQL Setup
-Ensure you have PostgreSQL installed and running.
-Create a database named `store_rating_platform`:
+Ensure PostgreSQL is installed and running, then create the database:
 ```sql
 CREATE DATABASE store_rating_platform;
 ```
@@ -52,7 +67,8 @@ CREATE DATABASE store_rating_platform;
 cd server
 npm install
 ```
-Create a `.env` file in the `server` directory (copy from `.env.example`) and fill in your DB credentials:
+
+Create a `.env` file in `server/` (copy from `.env.example`):
 ```env
 PORT=5000
 DB_HOST=localhost
@@ -64,46 +80,34 @@ JWT_SECRET=super_secret_jwt_key
 CLIENT_URL=http://localhost:5173
 ```
 
-Run the seed script to initialize the database schema and insert demo data:
+Seed the database (creates tables + demo data):
 ```bash
 npm run seed
 ```
 
 Start the backend server:
 ```bash
-npm run dev
-# or 
 node server.js
+# Server runs on http://localhost:5000
 ```
 
 ### 3. Frontend Setup
 ```bash
 cd client
 npm install
-```
-Start the frontend development server:
-```bash
 npm run dev
+# Frontend runs on http://localhost:5173
 ```
 
-## Demo Credentials
-All users share the same login portal (`/login`).
+> ⚠️ **Both servers must be running** for the app to work — the backend on port 5000 and the frontend on port 5173.
 
-**System Administrator:**
-- Email: `admin@example.com`
-- Password: `Admin@123`
-
-**Normal User:**
-- Email: `user@example.com`
-- Password: `User@123`
-
-**Store Owner:**
-- Email: `owner@example.com`
-- Password: `Owner@123`
+---
 
 ## Validation Rules
-- **Name**: 20-60 characters
-- **Address**: Max 400 characters
-- **Password**: 8-16 characters, 1 uppercase, 1 special character
-- **Email**: Standard email format
-- **Rating**: Integer 1-5
+| Field | Rule |
+|-------|------|
+| **Name** | 20–60 characters |
+| **Address** | Max 400 characters |
+| **Password** | 8–16 chars, at least 1 uppercase & 1 special character |
+| **Email** | Standard email format |
+| **Rating** | Integer from 1 to 5 |
